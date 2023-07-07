@@ -14,8 +14,8 @@ import java.util.NoSuchElementException;
 public class MemberRepositoryV0 {
 
     public Member save(Member member) throws SQLException {
-        String sql = "insert into member(member_id, money) values (?,?)";
-//        String sql = "insert into public.member(member_id, money) values (?,?)";
+//        String sql = "insert into member(member_id, money) values (?,?)";
+        String sql = "insert into public.member(member_id, money) values (?,?)";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -67,6 +67,49 @@ public class MemberRepositoryV0 {
             close(con, pstmt, rs);
         }
     }
+
+    public void update(String memberId, int money) throws SQLException {
+        String sql = "update public.member set money=? where member_id=?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, money);
+            pstmt.setString(2, memberId);
+            int resultSize = pstmt.executeUpdate();
+            log.info("resultSize={}", resultSize);
+        } catch (SQLException e) {
+            log.error("db error", e);
+            throw e;
+        } finally {
+            //예외가 생길수 있으니 finally에서 리소스정리 해줘야 한다.
+            close(con, pstmt, null);
+        }
+    }
+
+    public void delete(String memberId) throws SQLException {
+        String sql = "delete from public.member where member_id=?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, memberId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            log.error("db error", e);
+            throw e;
+        } finally {
+            //예외가 생길수 있으니 finally에서 리소스정리 해줘야 한다.
+            close(con, pstmt, null);
+        }
+    }
+
 
     private void close(Connection con, Statement stmt, ResultSet rs) {
         //stmt 가 예외사항이 발생해도 , con을 닫기 위해 각각 try catch 을 해줘야 한다.
