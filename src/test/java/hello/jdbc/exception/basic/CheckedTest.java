@@ -12,16 +12,12 @@ public class CheckedTest {
         Service service = new Service();
         service.callCatch();
     }
-
     @Test
     void checked_throw() {
         Service service = new Service();
         Assertions.assertThatThrownBy(() -> service.callThrow())
                 .isInstanceOf(MyCheckedException.class);
     }
-
-
-
     /**
      * Exception을 상속받은 예외는 체크 예외가 된다.
      */
